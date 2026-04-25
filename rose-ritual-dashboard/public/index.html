@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rose & Ritual — Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF8F5;
+      --cream-2: #F3F0EB;
+      --cream-3: #EAE6DF;
+      --ink: #1A1A18;
+      --ink-2: #444441;
+      --ink-3: #888780;
+      --rose: #8B6F5E;
+      --rose-light: #F0EBE4;
+      --border: #E0DDD6;
+      --success: #3B6D11;
+      --danger: #A32D2D;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--cream);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      letter-spacing: -0.3px;
+      color: var(--ink);
+    }
+    .logo em { font-style: italic; color: var(--rose); }
+    .handle-pill {
+      font-size: 12px;
+      color: var(--rose);
+      background: var(--rose-light);
+      padding: 3px 12px;
+      border-radius: 20px;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .last-updated { font-size: 12px; color: var(--ink-3); }
+    .refresh-btn {
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--ink);
+      color: var(--cream);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .refresh-btn:hover { background: var(--ink-2); }
+    .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* PLATFORM TABS */
+    .tabs-bar {
+      display: flex;
+      gap: 0;
+      padding: 0 2.5rem;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--cream);
+    }
+    .tab {
+      font-size: 13px;
+      padding: 14px 22px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: var(--ink-3);
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+    .tab:hover:not(.active) { color: var(--ink-2); }
+
+    /* MAIN CONTENT */
+    .main { padding: 2rem 2.5rem; max-width: 1200px; }
+    .platform-section { display: none; }
+    .platform-section.active { display: block; }
+
+    /* STATS GRID */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 1.75rem;
+    }
+    .stat-card {
+      background: #fff;
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-color: var(--ink-3); }
+    .stat-label {
+      font-size: 11px;
+      color: var(--ink-3);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .stat-delta { font-size: 12px; }
+    .stat-delta.up { color: var(--success); }
+    .stat-delta.down { color: var(--danger); }
+    .stat-delta.neutral { color: var(--ink-3); }
+
+    /* TWO COL */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 16px;
+    }
+    .panel {
+      background: #fff;
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .panel-title {
+      font-size: 11px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+
+    /* POSTS */
+    .post-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 0.5px solid var(--cream-2);
+    }
+    .post-row:last-child { border-bottom: none; }
+    .post-num { font-size: 11px; color: #ccc; width: 18px; flex-shrink: 0; text-align: center; }
+    .post-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .post-info { flex: 1; min-width: 0; }
+    .post-title {
+      font-size: 13px;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .post-meta { font-size: 11px; color: var(--ink-3); }
+    .post-stat { text-align: right; flex-shrink: 0; }
+    .post-likes { font-size: 14px; font-weight: 500; color: var(--ink); }
+    .post-eng { font-size: 11px; color: var(--ink-3); }
+
+    /* HASHTAGS */
+    .hashtag-list { display: flex; flex-direction: column; gap: 13px; }
+    .hashtag-row { display: flex; align-items: center; gap: 10px; }
+    .hashtag-name { font-size: 13px; color: var(--ink); min-width: 130px; }
+    .hashtag-bar-wrap {
+      flex: 1;
+      height: 3px;
+      background: var(--cream-3);
+      border-radius: 2px;
+    }
+    .hashtag-bar {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--rose);
+      transition: width 0.6s ease;
+    }
+    .hashtag-count { font-size: 12px; color: var(--ink-3); min-width: 28px; text-align: right; }
+
+    /* STATES */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 0;
+      gap: 12px;
+    }
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--cream-3);
+      border-top-color: var(--rose);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state p { font-size: 13px; color: var(--ink-3); }
+
+    .error-state { text-align: center; padding: 3rem 0; }
+    .error-msg { font-size: 14px; color: var(--danger); margin-bottom: 8px; }
+    .error-note { font-size: 12px; color: var(--ink-3); }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .topbar, .tabs-bar, .main { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+      .stat-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">Rose <em>&</em> Ritual</div>
+    <div class="handle-pill">@roseritualapothecary</div>
+  </div>
+  <div class="topbar-right">
+    <span class="last-updated" id="lastUpdated"></span>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadAll()">Refresh</button>
+  </div>
+</div>
+
+<div class="tabs-bar">
+  <div class="tab active" onclick="switchTab('tiktok', this)">TikTok</div>
+  <div class="tab" onclick="switchTab('instagram', this)">Instagram</div>
+</div>
+
+<div class="main">
+  <div id="tiktok-section" class="platform-section active">
+    <div class="loading-state"><div class="spinner"></div><p>Loading TikTok analytics...</p></div>
+  </div>
+  <div id="instagram-section" class="platform-section">
+    <div class="loading-state"><div class="spinner"></div><p>Loading Instagram analytics...</p></div>
+  </div>
+</div>
+
+<script>
+  const HANDLE = 'roseritualapothecary';
+  const TT_COLORS = ['#F0EBE4','#E8E0D5','#DFD4C6','#D5C8B6','#CBBCA6'];
+  const IG_COLORS = ['#FDF0EB','#F5DDD3','#EECABB','#E6B6A3','#DEA28B'];
+
+  function fmtNum(n) {
+    if (n == null || isNaN(n)) return '--';
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+    return Math.round(n).toLocaleString();
+  }
+
+  function fmtPct(n) {
+    if (n == null || isNaN(n)) return '--';
+    return (n * 100).toFixed(1) + '%';
+  }
+
+  function switchTab(platform, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.platform-section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(platform + '-section').classList.add('active');
+  }
+
+  async function apiFetch(platform, type) {
+    const res = await fetch(`/api/${platform}?handle=${HANDLE}&type=${type}`);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res.json();
+  }
+
+  function renderStats(stats) {
+    return `<div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Followers</div>
+        <div class="stat-value">${fmtNum(stats.followers)}</div>
+        <div class="stat-delta neutral">total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Following</div>
+        <div class="stat-value">${fmtNum(stats.following)}</div>
+        <div class="stat-delta neutral">accounts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total likes</div>
+        <div class="stat-value">${fmtNum(stats.likes)}</div>
+        <div class="stat-delta neutral">lifetime</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Engagement</div>
+        <div class="stat-value">${fmtPct(stats.engagement_rate)}</div>
+        <div class="stat-delta ${stats.engagement_rate > 0.03 ? 'up' : 'neutral'}">${stats.engagement_rate > 0.03 ? 'above avg' : 'avg'}</div>
+      </div>
+    </div>`;
+  }
+
+  function renderPosts(posts, colors) {
+    if (!posts || !posts.length) return '<p style="font-size:13px;color:var(--ink-3);text-align:center;padding:1.5rem 0">No post data available</p>';
+    return posts.slice(0, 5).map((p, i) => `
+      <div class="post-row">
+        <div class="post-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="post-thumb" style="background:${colors[i % colors.length]}">${p.type === 'video' ? '▶' : p.type === 'carousel' ? '⊞' : '◻'}</div>
+        <div class="post-info">
+          <div class="post-title">${p.title || 'Untitled'}</div>
+          <div class="post-meta">${p.date || ''}</div>
+        </div>
+        <div class="post-stat">
+          <div class="post-likes">${fmtNum(p.likes)}</div>
+          <div class="post-eng">${p.engagement_rate ? fmtPct(p.engagement_rate) + ' eng' : ''}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderHashtags(tags) {
+    if (!tags || !tags.length) return '<p style="font-size:13px;color:var(--ink-3);text-align:center;padding:1rem 0">No hashtag data</p>';
+    const max = Math.max(...tags.map(t => t.count || 1));
+    return `<div class="hashtag-list">${tags.slice(0, 6).map(t => `
+      <div class="hashtag-row">
+        <div class="hashtag-name">#${t.tag}</div>
+        <div class="hashtag-bar-wrap"><div class="hashtag-bar" style="width:${Math.round(((t.count || 1) / max) * 100)}%"></div></div>
+        <div class="hashtag-count">${t.count || ''}</div>
+      </div>`).join('')}</div>`;
+  }
+
+  function extractHashtags(posts) {
+    const counts = {};
+    posts.forEach(p => {
+      const text = p.description || p.caption || p.text || '';
+      (text.match(/#\w+/g) || []).forEach(t => {
+        const k = t.slice(1).toLowerCase();
+        counts[k] = (counts[k] || 0) + 1;
+      });
+    });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([tag, count]) => ({ tag, count }));
+  }
+
+  function buildUI(profileData, postsData, colors, platform) {
+    const d = profileData.data || profileData;
+    const author = d.author || d;
+    const eng = d.engagement || {};
+    const stats = {
+      followers: author.followers || author.follower_count || 0,
+      following: author.following || author.following_count || 0,
+      likes: eng.likes || author.heart_count || author.likes || author.media_count || 0,
+      engagement_rate: eng.engagement_rate || 0
+    };
+
+    const rawPosts = postsData ? (postsData.data || postsData.posts || postsData.videos || postsData.media || []) : [];
+    const posts = rawPosts.map(p => ({
+      title: p.description || p.caption || p.text || p.title || 'Post',
+      date: p.created_at ? new Date(p.created_at * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '',
+      likes: p.likes || p.digg_count || p.like_count || 0,
+      engagement_rate: p.engagement_rate || 0,
+      type: (p.media_type === 'VIDEO' || p.type === 'video') ? 'video' : (p.media_type === 'CAROUSEL_ALBUM' ? 'carousel' : 'image')
+    }));
+
+    const hashtags = extractHashtags(rawPosts);
+
+    return `
+      ${renderStats(stats)}
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Top posts</div></div>
+          ${renderPosts(posts, colors)}
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Top hashtags</div></div>
+          ${renderHashtags(hashtags)}
+        </div>
+      </div>`;
+  }
+
+  function showError(sectionId, msg) {
+    document.getElementById(sectionId).innerHTML = `
+      <div class="error-state">
+        <div class="error-msg">${msg}</div>
+        <div class="error-note">Check your API key in Vercel environment variables and redeploy.</div>
+      </div>`;
+  }
+
+  async function loadPlatform(platform, colors, sectionId) {
+    document.getElementById(sectionId).innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Loading ' + platform + ' analytics...</p></div>';
+    try {
+      const [profile, posts] = await Promise.all([
+        apiFetch(platform, 'profile'),
+        apiFetch(platform, 'posts').catch(() => null)
+      ]);
+      document.getElementById(sectionId).innerHTML = buildUI(profile, posts, colors, platform);
+    } catch (e) {
+      showError(sectionId, 'Could not load ' + platform + ' data: ' + e.message);
+    }
+  }
+
+  async function loadAll() {
+    const btn = document.getElementById('refreshBtn');
+    btn.disabled = true;
+    btn.textContent = 'Loading...';
+
+    await Promise.all([
+      loadPlatform('tiktok', TT_COLORS, 'tiktok-section'),
+      loadPlatform('instagram', IG_COLORS, 'instagram-section')
+    ]);
+
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent = 'Updated ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    btn.disabled = false;
+    btn.textContent = 'Refresh';
+  }
+
+  loadAll();
+</script>
+</body>
+</html>
