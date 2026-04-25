@@ -8,9 +8,9 @@ export default async function handler(req, res) {
   const key = process.env.SOCIALCRAWL_API_KEY;
   if (!key) return res.status(500).json({ error: 'API key not configured' });
 
-  const endpoint = type === 'posts'
-    ? `https://socialcrawl.dev/v1/tiktok/posts?handle=${handle}&limit=10`
-    : `https://socialcrawl.dev/v1/tiktok/profile?handle=${handle}`;
+ const endpoint = type === 'posts'
+  ? `https://socialcrawl.dev/v1/tiktok/posts?handle=${handle}&limit=10`
+  : `https://socialcrawl.dev/v1/tiktok/profile?handle=${handle}`;
 
   try {
     const response = await fetch(endpoint, {
