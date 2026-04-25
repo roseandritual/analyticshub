@@ -9,9 +9,9 @@ export default async function handler(req, res) {
   if (!key) return res.status(500).json({ error: 'API key not configured' });
 
   const endpoint = type === 'posts'
-    ? `https://api.socialcrawl.dev/v1/instagram/posts?handle=${handle}&limit=10`
-    : `https://api.socialcrawl.dev/v1/instagram/profile?handle=${handle}`;
-
+    ? `https://socialcrawl.dev/v1/instagram/posts?handle=${handle}&limit=10`
+    : `https://socialcrawl.dev/v1/instagram/profile?handle=${handle}`;
+  
   try {
     const response = await fetch(endpoint, {
       headers: { 'x-api-key': key }
